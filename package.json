@@ -46,6 +46,7 @@
   "dependencies": {
     "babel-runtime": "5.8.20",
     "bluebird": "^2.9",
+    "canvas": "1.2.11",
     "debug": "^2.2",
     "eventsource": "^0.1.6",
     "iconv-lite": "^0.4.11",
