@@ -221,12 +221,7 @@ describe('Browser', function() {
             </html>
           `);
 
-          try {
-            await imgBrowser.visit('/browser/missing-resource');
-            assert(false, 'Should have errored');
-          } catch (callbackError) {
-            assert(true);
-          }
+          await imgBrowser.visit('/browser/missing-resource');
         });
 
         it('should load document', function() {
