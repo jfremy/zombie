@@ -36,7 +36,8 @@
   "main": "lib",
   "scripts": {
     "build": "gulp build",
-    "test": "gulp lint && mocha",
+    "pretest": "gulp lint",
+    "test": "mocha",
     "prepublish": "npm test && gulp build",
     "postpublish": "git push"
   },
