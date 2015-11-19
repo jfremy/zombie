@@ -51,9 +51,10 @@ DOM.HTMLAnchorElement.prototype._eventDefaults.click = function(event) {
 DOM.HTMLImageElement.prototype._attrModified = function(name, value, oldVal) {
   if (name === 'src' && value && value !== oldVal) {
     const src = resourceLoader.resolveResourceUrl(this._ownerDocument, value);
-    if (this.src !== src)
+    if (oldVal !== value)
       resourceLoader.load(this, value);
   }
+  DOM.HTMLElement.prototype._attrModified.call(this, name, value, oldVal);
 };
 
 
