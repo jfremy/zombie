@@ -46,7 +46,7 @@ describe('Document', function() {
       before(async function() {
         await browser.visit('/document/activeElement');
         const div = browser.document.createElement('div');
-        div.setAttribute('autofocus');
+        div.setAttribute('autofocus', true);
         browser.document.body.appendChild(div);
       });
 
