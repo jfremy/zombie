@@ -86,7 +86,7 @@ describe('IFrame', function() {
               // Give the frame a chance to load before sending message
               var iframe = document.getElementsByTagName('iframe')[0];
               iframe.addEventListener('load', function() {
-                window.frames['ping'].postMessage('ping');
+                window.frames['ping'].postMessage('ping', '*');
               });
               // Ready to receive response
               window.addEventListener('message', function(event) {
@@ -99,7 +99,7 @@ describe('IFrame', function() {
         <script>
           window.addEventListener('message', function(event) {
             if (event.data == 'ping')
-              event.source.postMessage('pong ' + event.origin);
+              event.source.postMessage('pong ' + event.origin, '*');
           });
         </script>`);
     });

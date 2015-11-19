@@ -225,6 +225,7 @@ function setupWindow(window, args) {
   window.setImmediate   = (fn)=> eventQueue.setTimeout(fn, 0);
   window.clearImmediate = eventQueue.clearTimeout.bind(eventQueue);
   window.requestAnimationFrame  = window.setImmediate;
+  window.postMessage = postMessage;
 
 
   // Constructor for EventSource, URL is relative to document's.
@@ -394,11 +395,11 @@ function setupWindow(window, args) {
 
 
 // Help iframes talking with each other
-Window.prototype.postMessage = function(data) {
+function postMessage(data) {
   // Create the event now, but dispatch asynchronously
   const event = this.document.createEvent('MessageEvent');
   event.initEvent('message', false, false);
-  event.data = data;
+  event._data = data;
   // Window A (source) calls B.postMessage, to determine A we need the
   // caller's window.
 
@@ -412,7 +413,7 @@ Window.prototype.postMessage = function(data) {
   const origin = event.source.location;
   event.origin = URL.format({ protocol: origin.protocol, host: origin.host });
   this.dispatchEvent(event);
-};
+}
 
 
 // Change location
