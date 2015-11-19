@@ -1,3 +1,4 @@
+const jsdom             = require('jsdom');
 const assert            = require('assert');
 const Assert            = require('./assert');
 const Bluebird          = require('bluebird');
