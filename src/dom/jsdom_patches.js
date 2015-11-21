@@ -212,18 +212,3 @@ resourceLoader.load = function(element, href, callback) {
     });
   }
 };
-
-// Fix residual Node bug. See https://github.com/joyent/node/pull/14146
-const jsdomResolveHref = Utils.resolveHref;
-Utils.resolveHref = function (baseUrl, href) {
-  const pattern = /file:?/;
-  const protocol = URL.parse(baseUrl).protocol;
-  const original = URL.parse(href);
-  const resolved = URL.parse(jsdomResolveHref(baseUrl, href));
-
-  if (!pattern.test(protocol) && pattern.test(original.protocol) && !original.host && resolved.host)
-    return URL.format(original);
-  else
-    return URL.format(resolved);
-};
-
