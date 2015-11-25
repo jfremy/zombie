@@ -52,12 +52,7 @@ function refreshNameAccessor(frame) {
 }
 
 function isInDocument(el) {
-  const document = el._ownerDocument;
-  let   current = el;
-  while ((current = current._parentNode))
-    if (current === document)
-      return true;
-  return false;
+  return el._attached && el._ownerDocument._defaultView
 }
 
 

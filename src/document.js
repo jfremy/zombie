@@ -15,6 +15,7 @@ const VM              = require('vm');
 const WebSocket       = require('ws');
 const Window          = require('jsdom/lib/jsdom/browser/Window');
 const XMLHttpRequest  = require('./xhr');
+const VirtualConsole  = require('jsdom/lib/jsdom/virtual-console');
 
 
 // File access, not implemented yet
@@ -444,12 +445,27 @@ function createDocument(args) {
   if (args.browser.hasFeature('iframe', true))
     features.FetchExternalResources.push('iframe');
 
+  const vc = new VirtualConsole();
   const window  = new Window({
     parsingMode:  'html',
     contentType:  'text/html',
     url:          args.url,
-    referrer:     args.referrer
+    referrer:     args.referrer,
+    virtualConsole: vc
   });
+
+  vc.on("jsdomError", function (error) {
+    //TODO: very very dirty hack. With all errors bubbling up, I need to filter out load error for resources
+    if(/Could not load/.exec(error.message)) {
+      return;
+    }
+    if(error.detail) {
+      window._eventQueue.onerror(error.detail);
+    } else {
+      window._eventQueue.onerror(error);
+    }
+  });
+
   const { document } = window;
   browserFeatures.applyDocumentFeatures(document, features);
   setupWindow(window, args);

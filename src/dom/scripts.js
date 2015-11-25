@@ -2,7 +2,7 @@
 
 const DOM             = require('./index');
 const resourceLoader  = require('jsdom/lib/jsdom/browser/resource-loader');
-
+const reportException = require("jsdom/lib/jsdom/living/helpers/runtime-script-errors");
 
 // -- Patches to JSDOM --
 
@@ -14,7 +14,7 @@ DOM.languageProcessors.javascript = function(element, buffer, filename) {
   if (!code)
     return;
 
-  // Surpress JavaScript validation and execution
+  // Suppress JavaScript validation and execution
   const document = element.ownerDocument;
   const window   = document.defaultView;
   const browser  = window.top.browser;
@@ -29,9 +29,9 @@ DOM.languageProcessors.javascript = function(element, buffer, filename) {
     if (error.hasOwnProperty('stack')) {
       const cast = new Error(error.message || error.toString());
       cast.stack = error.stack;
-      document.raise('error', error.message, { exception: cast });
+      reportException(window, cast);
     } else
-      document.raise('error', error.message, { exception: error });
+      reportException(window, error);
   } finally {
     window.document._currentScript = null;
   }
