@@ -4,9 +4,10 @@
 const DOM             = require('./index');
 const Fetch           = require('../fetch');
 const resourceLoader  = require('jsdom/lib/jsdom/browser/resource-loader');
+const createHTMLCollection = require("jsdom/lib/jsdom/living/html-collection").create;
 
 DOM.HTMLDocument.prototype.__defineGetter__('scripts', function() {
-  return new DOM.HTMLCollection(this, ()=> this.querySelectorAll('script'));
+  return createHTMLCollection(this, ()=> this.querySelectorAll('script'));
 });
 
 
