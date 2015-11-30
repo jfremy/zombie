@@ -447,12 +447,31 @@ function createDocument(args) {
   if (args.browser.hasFeature('iframe', true))
     features.FetchExternalResources.push('iframe');
 
+  function rL(resource, callback) {
+    const url = resource.url.format();
+    const request = new Fetch.Request(url);
+    window._eventQueue.http(request, (error, response)=> {
+      // Since this is used by resourceLoader that doesn't check the response,
+      // we're responsible to turn anything other than 2xx/3xx into an error
+      if (error)
+        callback(new Error('Network error'));
+      else if (response.status >= 400)
+        callback(new Error(`Server returned status code ${response.status} from ${url}`));
+      else
+        response._consume().then((buffer)=> {
+          response.body = buffer;
+          callback(null, buffer);
+        });
+    });
+  }
+
   const vc = new VirtualConsole();
   const window  = new Window({
     parsingMode:  'html',
     contentType:  'text/html',
     url:          args.url,
     referrer:     args.referrer,
+    resourceLoader: rL,
     virtualConsole: vc
   });
 

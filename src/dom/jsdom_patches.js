@@ -147,34 +147,3 @@ DOM.EventTarget.prototype.dispatchEvent = function(event) {
     browser._windowInScope = originalInScope;
   }
 };
-
-// Fix resource loading to keep track of in-progress requests. Need this to wait
-// for all resources (mainly JavaScript) to complete loading before terminating
-// browser.wait.
-resourceLoader.load = function(element, href, callback) {
-  const document      = element.ownerDocument;
-  const window        = document.defaultView;
-  const tagName       = element.tagName.toLowerCase();
-  const loadResource  = document.implementation._hasFeature('FetchExternalResources', tagName);
-  const url           = resourceLoader.resolveResourceUrl(document, href);
-
-  if (loadResource) {
-    // This guarantees that all scripts are executed in order, must add to the
-    // JSDOM queue before we add to the Zombie event queue.
-    const enqueued = this.enqueue(element, url, callback && callback.bind(element));
-    const request = new Fetch.Request(url);
-    window._eventQueue.http(request, (error, response)=> {
-      // Since this is used by resourceLoader that doesn't check the response,
-      // we're responsible to turn anything other than 2xx/3xx into an error
-      if (error)
-        enqueued(new Error('Network error'));
-      else if (response.status >= 400)
-        enqueued(new Error(`Server returned status code ${response.status} from ${url}`));
-      else
-        response._consume().then((buffer)=> {
-          response.body = buffer;
-          enqueued(null, buffer);
-        });
-    });
-  }
-};
