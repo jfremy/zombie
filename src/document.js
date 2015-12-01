@@ -393,9 +393,6 @@ function setupWindow(window, args) {
 // Help iframes talking with each other
 function postMessage(data) {
   // Create the event now, but dispatch asynchronously
-  const event = this.document.createEvent('MessageEvent');
-  event.initEvent('message', false, false);
-  event._data = data;
   // Window A (source) calls B.postMessage, to determine A we need the
   // caller's window.
 
@@ -405,9 +402,17 @@ function postMessage(data) {
   // version of the object returned by getGlobal, they are not the same object
   // ie, _windowInScope.foo == _windowInScope.getGlobal().foo, but
   // _windowInScope != _windowInScope.getGlobal()
-  event.source = (this.browser._windowInScope || this);
-  const origin = event.source.location;
-  event.origin = URL.format({ protocol: origin.protocol, host: origin.host });
+  const source = (this.browser._windowInScope || this);
+  const origin = source.location;
+  const event = new this.MessageEvent("message", {
+    data: data,
+    source: source,
+    origin: URL.format({ protocol: origin.protocol, host: origin.host })
+  });
+
+  event.initEvent("message", false, false);
+  // jsdom uses a setTimeout 0 before sending the event. Don't know why
+  // if I do it, the test fails
   this.dispatchEvent(event);
 }
 
