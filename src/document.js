@@ -17,12 +17,6 @@ const Window          = require('jsdom/lib/jsdom/browser/Window');
 const XMLHttpRequest  = require('./xhr');
 const VirtualConsole  = require('jsdom/lib/jsdom/virtual-console');
 
-
-// File access, not implemented yet
-class File {
-}
-
-
 // Screen object provides access to screen dimensions
 class Screen {
   constructor() {
@@ -137,7 +131,6 @@ function setupWindow(window, args) {
   });
   browser._storages.extend(window);
 
-  window.File =           File;
   window.Event =          DOM.Event;
   window.MouseEvent =     DOM.MouseEvent;
   window.MutationEvent =  DOM.MutationEvent;

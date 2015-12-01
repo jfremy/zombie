@@ -22,7 +22,7 @@ const Tough             = require('tough-cookie');
 const { Cookie }        = Tough;
 const URL               = require('url');
 const Utils             = require('jsdom/lib/jsdom/utils');
-
+const filelistSymbols = require("jsdom/lib/jsdom/living/filelist-symbols");
 
 // Version number.  We get this from package.json.
 const VERSION = require(`${__dirname}/../package.json`).version;
@@ -876,17 +876,14 @@ class Browser extends EventEmitter {
   attach(selector, filename) {
     const field = this.field(selector);
     assert(field && field.tagName === 'INPUT' && field.type === 'file', `No file INPUT matching '${selector}'`);
-
     if (filename) {
-      const stat = File.statSync(filename);
-      const file = new (this.window.File)();
-      file.name = Path.basename(filename);
-      file.type = Mime.lookup(filename);
-      file.size = stat.size;
+      const data = File.readFileSync(filename);
+      const filepath = Path.basename(filename);
+      const filetype = Mime.lookup(filename);
+      const file = new (this.window.File)([ data ], filepath, {type: filetype});
 
       field.value = filename;
-      field.files = field.files || [];
-      field.files.push(file);
+      field.files[filelistSymbols.list].push(file);
     }
     field.focus();
     this.fire(field, 'change', false);

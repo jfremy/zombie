@@ -1273,7 +1273,7 @@ describe('Forms', function() {
             <script>
               function handleFile() {
                 document.title = "Upload done";
-                var file = document.getElementById("my_file").files[0];
+                var file = document.getElementById("my_file").files.item(0);
                 document.getElementById("filename").innerHTML = file.name;
                 document.getElementById("type").innerHTML = file.type;
                 document.getElementById("size").innerHTML = file.size;
